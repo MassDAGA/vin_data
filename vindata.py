@@ -216,4 +216,4 @@ st.markdown('''This application checks customer VINs with the [National Highway 
 If you are interested in a list of accurate VINs that relate to CAN compatible vehicles excluding trailers and lifts, please refer to the [Automated VIN Decoding Application.](https://autovin.streamlit.app/)
 
 If you are encountering issues with this application please contact the [Service Excellence Team.](MCFNAServiceExcellenceTeam@MichelinGroup.onmicrosoft.com)
-Hi Team!''')
+''')
