@@ -198,7 +198,7 @@ st.markdown('''This application checks customer VINs with the [National Highway 
 **Input Document Requirements:**
 
 - The uploaded document containing the VINs must follow the standard [Michelin Connected Fleet Deployment Template.](https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fraw.githubusercontent.com%2FChanMichelin%2FautovinMCF%2Fmain%2Fexamples%2FMCF%2520Deployment%2520Template.xlsx&wdOrigin=BROWSELINK) This application cannot decipher different document formats. If an error is indicated with a file you upload, please check the uploaded document follows the formatting guidelines.
-- Make sure the input document is not open on your computer. If the input document is open, a permission error will occur.
+- Make sure the input document is not open on your computer. If the input document is open a permission error will occur.
 - The VIN column must include the VINs the user wants to query. This is the only field necessary to retrieve vehicle data. 
 
 ***Example Input File:*** [***VIN Example***](https://michelingroup.sharepoint.com/:x:/r/sites/ProcessImprovement/_layouts/15/Doc.aspx?sourcedoc=%7BFA264B31-B424-418C-8D1C-C0E5F001094E%7D&file=MCF%20Deployment%20Template.xlsx&action=default&mobileredirect=true&wdsle=0)
