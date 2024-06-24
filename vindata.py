@@ -117,7 +117,7 @@ def vin_data(file_bytes, original_filename):
         #if code times out, this error handling will make sure the code does not run indefinitely, if
         #encountered the code will stop processing VINs and communicate a time out error to the user
         except requests.exceptions.Timeout as e:
-            return "Request Timed out"
+            return "Request Timed Out"
         
     #create dataframe from list of dictionaries, each dictionary is a row within the 'results' dataframe
     results_df = pd.DataFrame(results)
