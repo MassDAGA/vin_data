@@ -142,8 +142,11 @@ This application checks customer VINs with the [National Highway Traffic Safety 
 - The uploaded document containing the VINs must follow the standard [Michelin Connected Fleet Deployment Template.](https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fraw.githubusercontent.com%2FChanMichelin%2FautovinMCF%2Fmain%2Fexamples%2FMCF%2520Deployment%2520Template.xlsx&wdOrigin=BROWSELINK) This application cannot decipher different document formats. If an error is indicated with a file you upload, please check the uploaded document follows the formatting guidelines.
 - The VIN column must include the VINs the user wants to query. This is the only field necessary to retrieve vehicle data. 
 - Make sure the input document is not open on your computer. If the input document is open, a permission error will occur.
+
 ***Example Input File:*** [***VIN Example***](https://michelingroup.sharepoint.com/:x:/r/sites/ProcessImprovement/_layouts/15/Doc.aspx?sourcedoc=%7BFA264B31-B424-418C-8D1C-C0E5F001094E%7D&file=MCF%20Deployment%20Template.xlsx&action=default&mobileredirect=true&wdsle=0)
+
 ***Note:*** If you are interested in vehicle information regarding VINs recorded in a different format/document: download the MCF Deployment Template linked above, then copy and paste the VINs into the VIN column and upload this document for bulk processing.
+
 **Output Document Description:**
 - This application processes all the VINs regardless of VIN accuracy or vehicle type. 
 - If the VIN is inaccurate or relates to a lift/trailer not present in the NHTSA database the 'Error' column will indicate what type of error is occurring for user reference. 
@@ -151,6 +154,10 @@ This application checks customer VINs with the [National Highway Traffic Safety 
 - This file provides information on vehicle make, model, year, and manufacturer as well as more detailed information pertaining to trim, engine type, primary fuel etc. 
 - When a cell is empty, but the error column reports there was no issue processing the VIN (error code is 0) this indicates that data on this vehicle specification is not recorded within the NHTSA database. 
 - The output Excel file will have the same name as the original document followed by _VIN_data. 
+
 ***Example Output File:*** [***VIN Example_VIN_data***](https://michelingroup.sharepoint.com/:x:/r/sites/ProcessImprovement/_layouts/15/Doc.aspx?sourcedoc=%7B7481464E-023E-4E40-9007-34AE4022EECE%7D&file=VIN%20Example_VIN_data.xlsx&action=default&mobileredirect=true&wdsle=0)
+
 If you are interested in a list of accurate VINs that relate to CAN compatible vehicles excluding trailers and lifts, please refer to the [Automated VIN Decoding Application.](https://autovin.streamlit.app/)
+
+If you are encountering issues with this application please contact the Service Excellence Team: MCFNAServiceExcellenceTeam@MichelinGroup.onmicrosoft.com
 ''')
