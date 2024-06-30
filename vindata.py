@@ -197,11 +197,11 @@ st.markdown('''This application checks customer VINs with the [National Highway 
 
 **Input Document Requirements:**
 
-- The uploaded document containing the VINs must follow the standard [Michelin Connected Fleet Deployment Template.](https://michelingroup.sharepoint.com/:x:/s/DocumentLibrary/EeVf3pMJk4RMoqM5R17La4UBkXCvYKbbhiTalXbr-RIU9g?e=vxNr7V) This application cannot decipher different document formats. If an error is indicated with a file you upload, please check the uploaded document follows the formatting guidelines.
+- The uploaded document containing the VINs must follow the standard [Michelin Connected Fleet Deployment Template.](https://michelingroup.sharepoint.com/:x:/s/DocumentLibrary/EeVf3pMJk4RMoqM5R17La4UBkXCvYKbbhiTalXbr-RIU9g?e=gOMlOh) This application cannot decipher different document formats. If an error is indicated with a file you upload, please check the uploaded document follows the formatting guidelines.
 - Make sure the input document is not open on your computer. If the input document is open, a permission error will occur.
 - The VIN column must include the VINs the user wants to query. This is the only field necessary to retrieve vehicle data. 
 
-***Example Input File:*** [***VIN Example***](https://michelingroup.sharepoint.com/:x:/s/DocumentLibrary/EQiKjKdXBXpFhLNWXL4IQc8BT4W1Y-J8EGZZ2ZegNpzkcA?e=9vA9mT)
+***Example Input File:*** [***VIN Example***](https://michelingroup.sharepoint.com/:x:/s/DocumentLibrary/EQiKjKdXBXpFhLNWXL4IQc8BT4W1Y-J8EGZZ2ZegNpzkcA?e=VL1sLH)
 
 ***Note:*** If you are interested in vehicle information regarding VINs recorded in a different format/document: download the MCF Deployment Template linked above, then copy and paste the VINs into the VIN column and upload this document for bulk processing.
 
@@ -214,7 +214,7 @@ st.markdown('''This application checks customer VINs with the [National Highway 
 - When a cell is empty, but the error column reports there was no issue processing the VIN (error code is 0) this indicates that data on this vehicle specification is not recorded within the NHTSA database. 
 - The output Excel file will have the same name as the original document followed by _VIN_data. 
 
-***Example Output File:*** [***VIN Example_VIN_data***](https://michelingroup.sharepoint.com/:x:/s/DocumentLibrary/EY7Q6swQvXZGkAUOcZ_fRU8BS6UzTRe57r6ibnhIf9eMvg?e=0G0OmP)
+***Example Output File:*** [***VIN Example_VIN_data***](https://michelingroup.sharepoint.com/:x:/s/DocumentLibrary/EY7Q6swQvXZGkAUOcZ_fRU8BS6UzTRe57r6ibnhIf9eMvg?e=0l8YxM)
 
 If you are interested in a list of accurate VINs that relate to CAN compatible vehicles excluding trailers and lifts, please refer to the [Automated VIN Decoding Application.](https://autovin.streamlit.app/)
 
