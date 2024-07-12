@@ -2,22 +2,26 @@
 import streamlit as st
 import pandas as pd
 import requests
-import openpyxl
 import os
-import io
+import openpyxl
+import numpy as np
+import json
+from datetime import datetime
+from io import BytesIO
 import json
 
+@st.cache_data
 
-def vin_data(file_bytes, original_filename):
+def vin_data(file_path):
     #some excel files have more than 1 sheet, we handle excel files with more than 1 sheet by telling the 
     #code to read the sheet named 'Vehicle & Asset List' as this is the standard naming convention
     #write the information from this sheet into dataframe named 'raw_vin_data'
-    wb = openpyxl.load_workbook(file_bytes)
+    wb = openpyxl.load_workbook(file_path)
     res = len(wb.sheetnames)
     if res > 1:
-        raw_vin_data = pd.read_excel(file_bytes, 'Vehicle & Asset List', header=3)
+        raw_vin_data = pd.read_excel(file_path, 'Vehicle & Asset List', header=3)
     else:
-        raw_vin_data = pd.read_excel(file_bytes, header=3)
+        raw_vin_data = pd.read_excel(file_path, header=3)
     
     #assign new column names to raw_vin_data dataframe for dataframe to standardize raw_vin_data for query
     for column in raw_vin_data.columns:
@@ -126,14 +130,14 @@ def vin_data(file_bytes, original_filename):
     results_df.drop_duplicates(subset=['VIN'], inplace=True)
     
     #ensure curser is at the beginning of the buffer before reading or downloading information
-    buffer = io.BytesIO()
+    #buffer = io.BytesIO()
     
     #information should be written to an Excel file, the output file will have the same name as the input
     #file with _VIN_data appended
-    processed_filename = os.path.splitext(original_filename)[0] + "_VIN_data.xlsx"
+    processed_file_path = os.path.splitext(file_path)[0] + "_VIN_data.xlsx"
     
     #write dataframe to Excel file table
-    with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
+    with pd.ExcelWriter(processed_file_path, engine='openpyxl') as writer:
         #write the results dataframe to a sheet named 'Vehicle Data'
         results_df.to_excel(writer, index=False, sheet_name='Vehicle Data')
 
@@ -158,9 +162,8 @@ def vin_data(file_bytes, original_filename):
             if worksheet.cell(row=1, column=idx + 1).value == 'Error Test':
                 worksheet.column_dimensions[chr(65 + idx)].width = 12
                 
-    buffer.seek(0)
     #save and return the processed excel file name and the buffer (memory of object)
-    return buffer, processed_filename
+    return processed_file_path
 
 #set the text font as open sans to adhere to Michelin branding guidelines
 st.markdown("""
@@ -181,15 +184,38 @@ st.title("VIN Vehicle Data")
 
 #create a drag and drop box for file uploading, indicate that the file must be a CSV or Excel file
 uploaded_file = st.file_uploader("Upload an Excel file", type=["xls", "xlsx", "csv"])
+    
+#check if session state vairables 'processed_file_path, checks if a file has been uploaded
+#if variables do not exists assign None to variables
+if "processed_file_path" not in st.session_state:
+    st.session_state["processed_file_path"] = None
 
-#if a file is uploaded call vin_data function to process the uploaded file
-if uploaded_file:
-    file_bytes = uploaded_file.read()
-    buffer, processed_filename = vin_data(io.BytesIO(file_bytes), uploaded_file.name)
-    #if the file is successfully processed inform the user
-    st.success(f'File "{uploaded_file.name}" successfully processed.')
-    #create button to download processed output file
-    st.download_button(label="Download Processed File", data=buffer, file_name=processed_filename)
+#if a file hase been uplaoded begin processing the file
+if uploaded_file is not None:
+    with st.spinner('Processing...'):
+        #label the input file path with the same name as the uploaded document
+        input_file_path = uploaded_file.name
+        #write the uploaded file to a disk
+        with open(input_file_path, "wb") as f:
+            f.write(uploaded_file.getbuffer())
+        #call confirm vin to process the input file, save the returned file paths to export to the user
+        processed_file_path = vin_data(input_file_path)
+        #indicate to the user the processed excel file status
+        st.session_state["processed_file_path"] = processed_file_path
+        #tell the user that the file has been successfully processed
+        st.success('File successfully processed!')
+
+#check if processed excel file paths exist
+if st.session_state["processed_file_path"]:
+    with open(st.session_state["processed_file_path"], "rb") as f:
+        processed_data = f.read()
+    #create button allowing user to download processed excel file
+    st.download_button(
+        label="Download Processed File",
+        data=BytesIO(processed_data),
+        file_name=os.path.basename(st.session_state["processed_file_path"]),
+        mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
 
 #document how to use the "VIN Vehicle Data application to the user
 
