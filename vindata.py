@@ -54,8 +54,25 @@ def vin_data(file_path):
     
     #iterate through each VIN in list of VINs
     for value in values:
-        #ensure the type of the VIN is string and remove spaces from VIN, accounts for common data entry error
-        value = str(value).replace(" ", "")
+        #ensure the type of the VIN is string
+        value = str(value)
+        #create variable indicating if a VIN has been corrected
+        corrected = 'NO'
+        #handle common data entry errors 
+        #remove spaces from VIN, accounts for common data entry error
+        if ' ' in value:
+            value = value.replace(" ", "")
+            corrected = 'YES: Spaces Removed'
+        #replace Q with 0
+        if 'q' in value.lower():
+            value = value.replace('Q','0')
+            value = value.replace('q', '0')
+            corrected = "YES: Replaced 'Q' with '0'"
+        #replace O with 0
+        if 'o' in value.lower() and 'unknown' not in value.lower():
+            value = value.replace('O', '0')
+            value = value.replace('o', '0')
+            corrected = "YES: Replaced 'O' with '0'"
         #create VIN specific link to access details for API query
         url = base_url + value + '?format=json'
         #pulls details from url, bypasses certification verification error created by Michelin firewalls
@@ -70,6 +87,7 @@ def vin_data(file_path):
             results.append({
                 'VIN': value, 
                 'VIN Mask': decoded_values.get('Vehicle Descriptor', 'N/A'), 
+                'VIN Corrected': corrected,
                 'Model Year': decoded_values.get('Model Year', 'N/A'), 
                 'Manufacturer': decoded_values.get('Manufacturer Name', 'N/A'), 
                 'Make': decoded_values.get('Make', 'N/A'), 
@@ -97,6 +115,7 @@ def vin_data(file_path):
             results.append({
                 'VIN': value, 
                 'VIN Mask': 'Error', 
+                'VIN Corrected': corrected,
                 'Model Year': 'Error', 
                 'Manufacturer': 'Error', 
                 'Make': 'Error', 
@@ -166,21 +185,58 @@ def vin_data(file_path):
     return processed_file_path
 
 #set the text font as open sans to adhere to Michelin branding guidelines
-st.markdown("""
-<style>
-@import url('https://fonts.googleapis.com/css?family=Your+Font+Name');
-body {
-    font-family: 'Your Font Name', open-sans;
-}
-</style>
-""", unsafe_allow_html=True)
+custom_css = """
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+
+        body {
+            font-family: 'Arial', 'Open Sans', sans-serif;
+        }
+
+        .custom-markdown {
+            font-size: 16px;
+            line-height: 1.5;
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        .custom-text-area {
+            font-family: 'Arial', 'Open Sans', sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            white-space: pre-wrap;
+        }
+        
+        .larger-font {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .largest-font {
+            font-size: 22px;
+            font-weight: bold;
+        }
+        
+        .title {
+            font-family: 'Arial', 'Open Sans', sans-serif;
+            font-size: 36px;
+            font-weight: bold;
+        }
+        
+    </style>
+"""
+
+st.markdown(custom_css, unsafe_allow_html=True)
 
 #add the Michelin banner to the top of the application, if the image link breaks you can correct this by copying and
 #pasting an alternative image url in the ()
 st.image("https://www.tdtyres.com/wp-content/uploads/2018/12/kisspng-car-michelin-man-tire-logo-michelin-logo-5b4c286206fa03.5353854915317177300286.png")
 
 #set the application title to 'VIN Vehicle Data'
-st.title("VIN Vehicle Data")
+st.markdown('<div class="custom-text-area title">{}</div>'.format('VIN Vehicle Data'), unsafe_allow_html=True)
 
 #create a drag and drop box for file uploading, indicate that the file must be a CSV or Excel file
 uploaded_file = st.file_uploader("Upload an Excel file", type=["xls", "xlsx", "csv"])
@@ -219,28 +275,34 @@ if st.session_state["processed_file_path"]:
 
 #document how to use the "VIN Vehicle Data application to the user
 
-st.markdown('''This application checks customer VINs with the [National Highway Traffic Safety Administration API](https://vpic.nhtsa.dot.gov/api/) to retrieve vehicle information based on the VIN. This application can handle large volumes of VINs but greater numbers of uploaded VINs will slow down processing time. Processing 2200 VINs takes roughly 25 minutes. When uploading large numbers of VINs please be patient and do not close out the application while processing.
+st.markdown('<div class="custom-text-area largest-font">{}</div>'.format('User Guide'), unsafe_allow_html=True)
 
-**Input Document Requirements:**
+st.markdown('''This application checks customer VINs with the [National Highway Traffic Safety Administration API](https://vpic.nhtsa.dot.gov/api/) to retrieve vehicle information based on the VIN. This application can handle large volumes of VINs but greater numbers of uploaded VINs will slow down processing time. Processing 2200 VINs takes roughly 25 minutes. When uploading large numbers of VINs please be patient and do not close out the application while processing.''')
 
+st.markdown('<div class="custom-text-area larger-font">{}</div>'.format('Input Document Requirements'), unsafe_allow_html=True)
+
+st.markdown('''
 - The uploaded document containing the VINs must follow the standard [Michelin Connected Fleet Deployment Template.](https://michelingroup.sharepoint.com/:x:/s/DocumentLibrary/EeVf3pMJk4RMoqM5R17La4UBkXCvYKbbhiTalXbr-RIU9g?e=vxNr7V) This application cannot decipher different document formats. If an error is indicated with a file you upload, please check the uploaded document follows the formatting guidelines.
 - Make sure the input document is not open on your computer. If the input document is open, a permission error will occur.
 - The VIN column must include the VINs the user wants to query. This is the only field necessary to retrieve vehicle data. 
 
-***Example Input File:*** [***VIN Example***](https://michelingroup.sharepoint.com/:x:/s/DocumentLibrary/EQiKjKdXBXpFhLNWXL4IQc8BT4W1Y-J8EGZZ2ZegNpzkcA?e=9vA9mT)
+***Example Input File:*** [***VIN Example***](https://michelingroup.sharepoint.com/:x:/s/DocumentLibrary/EYifdfuMSAJAnSaoPxeselABySIDMB0nLNRKxhBfW1kHWQ?e=kiEfnX)
 
-***Note:*** If you are interested in vehicle information regarding VINs recorded in a different format/document: download the MCF Deployment Template linked above, then copy and paste the VINs into the VIN column and upload this document for bulk processing.
+***Note:*** If you are interested in vehicle information regarding VINs recorded in a different format/document: download the MCF Deployment Template linked above, then copy and paste the VINs into the VIN column and upload this document for bulk processing.''')
 
-**Output Document Description:**
 
+st.markdown('<div class="custom-text-area larger-font">{}</div>'.format('Output Document Description:'), unsafe_allow_html=True)
+
+st.markdown('''
 - This application processes all the VINs regardless of VIN accuracy or vehicle type. 
 - If the VIN is inaccurate or relates to a lift/trailer not present in the NHTSA database the 'Error' column will indicate what type of error is occurring for user reference. 
 - An error code of 0 indicates there was no issue with the VIN. 
+- The 'VIN Corrected' column indicates if the VIN was corrected for common data entry errors.
 - This file provides information on vehicle make, model, year, and manufacturer as well as more detailed information pertaining to trim, engine type, primary fuel etc. 
 - When a cell is empty, but the error column reports there was no issue processing the VIN (error code is 0) this indicates that data on this vehicle specification is not recorded within the NHTSA database. 
 - The output Excel file will have the same name as the original document followed by _VIN_data. 
 
-***Example Output File:*** [***VIN Example_VIN_data***](https://michelingroup.sharepoint.com/:x:/s/DocumentLibrary/EY7Q6swQvXZGkAUOcZ_fRU8BS6UzTRe57r6ibnhIf9eMvg?e=0G0OmP)
+***Example Output File:*** [***VIN Example_VIN_data***](https://michelingroup.sharepoint.com/:x:/s/DocumentLibrary/EfORSzVsdVlMkvHwFupC0EgBnunZu8xgBLEsGDB0oX2kvA?e=RJ0k8Y)
 
 If you are interested in a list of accurate VINs that relate to CAN compatible vehicles excluding trailers and lifts, please refer to the [Automated VIN Decoding Application.](https://autovin.streamlit.app/)
 
